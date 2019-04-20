@@ -1,0 +1,103 @@
+body {
+  background: grey;
+}
+
+h1 {
+  margin-left: 1em;
+  margin-bottom: 0.2em;
+  margin-top: 1em;
+}
+
+#exerciseTrackerBlocks {
+  display: flex;
+  flex-direction: row;
+  align-content: left;
+  margin-left: 1em;
+  flex-wrap: wrap;
+}
+
+#newUserContainer {
+  height: 13em;
+  width: 22em;
+  background: #2eb82e;
+  border-radius: 0.5em;
+  margin-top: 10em;
+  margin-right: 0.2em;
+}
+
+#newUserText {
+  padding-top: 2em;
+}
+
+.headings {
+  padding-top: 1em;
+  margin-left: 1em;
+}
+
+.postSpan {
+  background-color: #ffff66;
+}
+
+#userNameInput {
+  width: 25.05em;
+  padding-bottom: 0.6em;
+  font-size: 0.8em;
+  height: 0.8em;
+  margin-top: 1em;
+}
+
+#addExercisesContainer {
+  height: 22em;
+  width: 22em;
+  background: #2eb82e;
+  border-radius: 0.5em;
+  margin-top: 1em;
+}
+
+div input {
+  margin-top: 1em;
+  width: 25.05em;
+  font-size: 0.8em;
+  height: 0.8em;
+  padding-bottom: 0.6em;
+}
+
+button {
+  margin-top: 1em;
+  border-radius: 0.1em;
+  border-color: white;
+  border-width: 0.1em;
+  width: 29.4em;
+  padding-bottom: 0.6em;
+  font-size: 0.7em;
+  height: 3em;
+  outline: none;
+  background: grey;
+}
+
+button:active {
+  transform: translateY(.4em);
+}
+
+#submitText {
+  font-size: 1.3em;
+  position: relative;
+  bottom: 0.25em;
+}
+
+#appInfoContainer {
+  margin-top: 2em;
+  margin-left: 1em;
+  font-size: 1.15em;
+}
+
+#getRoute {
+  background-color: #ffff66;
+  font-size: 1em;
+}
+
+#footer {
+  margin-top: 6em;
+  text-align: center;
+
+}

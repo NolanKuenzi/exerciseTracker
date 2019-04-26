@@ -7,8 +7,8 @@ const cors = require('cors');
 
 // data-base
 const mongoose = require('mongoose');
-const mongoUrl = require('./server/dbaseUrl');
-const uri = process.env.MONGODB_URI || mongoUrl();
+const mongoUrl = require('./dbaseUrl');
+const uri = process.env.MONGODB_URI || mongoUrl;
 const db = mongoose.connect(uri, { useNewUrlParser: true }).catch((error) => { console.log(error); });
 
 const app = express();
@@ -17,18 +17,12 @@ const routes = require('./server/routes');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-// data-base
-
 app.use(cors({optionSuccessStatus: 200}));
  
 // Point static path to dist
 
 app.use('/', express.static(path.join(__dirname, 'dist')));
 app.use('/', routes);
-
-
-
 
 /** Get port from environment and store in Express. */
 const port = process.env.PORT || '3000';

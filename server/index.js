@@ -7,7 +7,7 @@ const cors = require('cors');
 
 // data-base
 const mongoose = require('mongoose');
-const mongoUrl = require('./dbaseUrl');
+const mongoUrl = require('../dbaseUrl');
 const uri = process.env.MONGODB_URI || mongoUrl;
 const db = mongoose.connect(uri, { useNewUrlParser: true }).catch((error) => { console.log(error); });
 

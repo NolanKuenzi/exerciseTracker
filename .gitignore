@@ -27,4 +27,4 @@ coverage
 .DS_Store
 /altApis
 /server/dbaseUrl.js
-/public
+/dist

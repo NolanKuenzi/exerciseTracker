@@ -2,9 +2,7 @@
 node_modules
 
 # Build Files 
-/dist/main.css
-/dist/main.js
-/dist/statistics.html
+/dist
 
 # Logs
 logs
@@ -27,4 +25,3 @@ coverage
 .DS_Store
 /altApis
 /server/dbaseUrl.js
-/dist

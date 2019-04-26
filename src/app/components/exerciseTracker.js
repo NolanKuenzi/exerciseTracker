@@ -1,6 +1,6 @@
 import React from 'react';
-import NewUser from '../containers/newUser';
-import AddExercises from '../containers/addExercises';
+import NewUser from './newUser';
+import AddExercises from './addExercises';
 import AppInformation from './appInfo';
 import Footer from './footer';
 

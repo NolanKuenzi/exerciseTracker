@@ -3,7 +3,7 @@ import React from 'react';
 const NewUser = () => {
   return (
     <div>
-      <form>
+      <form action="http://localhost:3000/api/exercise/new-user" method="post" target="_blank">
         <div id="newUserContainer" data-testid="userContainerTest">
           <h3 className="headings" id="newUserText">
             Create a New User
@@ -17,8 +17,9 @@ const NewUser = () => {
             className="headings"
             id="userNameInput"
             data-testid="userNameInputTest"
+            name="inputUrl"
           />
-          <button className="headings">
+          <button className="headings" type="submit">
             <span id="submitText">Submit</span>
           </button>
         </div>
@@ -26,5 +27,4 @@ const NewUser = () => {
     </div>
   );
 };
-
 export default NewUser;

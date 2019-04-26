@@ -1,9 +1,6 @@
 # NPM packages folder.
 node_modules
 
-# Build Files 
-/dist
-
 # Logs
 logs
 *.log
@@ -24,4 +21,6 @@ coverage
 # misc
 .DS_Store
 /altApis
-/server/dbaseUrl.js
+./server/index.js
+./dbaseUrl.js
+

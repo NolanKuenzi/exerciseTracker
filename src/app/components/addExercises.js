@@ -3,7 +3,7 @@ import React from 'react';
 const AddExercises = () => {
   return (
     <div id="addExercisesContainer" data-testid="addExercisesTest">
-      <form action="http://localhost:3000/api/exercise/add" method="post" target="_blank">
+      <form action="https://sleepy-springs-16191.herokuapp.com/api/exercise/add" method="post" target="_blank">
         <h3 className="headings">Add Exercises</h3>
         <span className="headings">
           <span className="postSpan" data-testid="innerSpanTest">

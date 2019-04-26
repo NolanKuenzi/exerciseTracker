@@ -3,7 +3,7 @@ import React from 'react';
 const NewUser = () => {
   return (
     <div>
-      <form action="http://localhost:3000/api/exercise/new-user" method="post" target="_blank">
+      <form action="https://sleepy-springs-16191.herokuapp.com/api/exercise/new-user" method="post" target="_blank">
         <div id="newUserContainer" data-testid="userContainerTest">
           <h3 className="headings" id="newUserText">
             Create a New User

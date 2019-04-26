@@ -21,7 +21,7 @@ app.use(cors({optionSuccessStatus: 200}));
  
 // Point static path to dist
 
-app.use('/', express.static(path.join(__dirname, 'dist')));
+app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
 /** Get port from environment and store in Express. */

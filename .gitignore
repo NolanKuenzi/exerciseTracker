@@ -21,4 +21,6 @@ coverage
 # misc
 .DS_Store
 /altApis
-/server/index.js
+/server/indexBackUp.js
+/server/altScripts.js
+/server/dbaseUrl.js

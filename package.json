@@ -10,8 +10,8 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js",
-    "devstart": "nodemon index.js",
+    "start": "node ./server/index.js",
+    "devstart": "nodemon ./server/index.js",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
     "test": "jest",

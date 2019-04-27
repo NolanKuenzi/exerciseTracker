@@ -12,7 +12,7 @@ const uri = process.env.MONGODB_URI || mongoUrl;
 const db = mongoose.connect(uri, { useNewUrlParser: true }).catch((error) => { console.log(error); });
 
 const app = express();
-const routes = require('./server/routes');
+const routes = require('./routes');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -21,7 +21,7 @@ app.use(cors({optionSuccessStatus: 200}));
  
 // Point static path to dist
 
-app.use('/', express.static(path.join(__dirname, 'public')));
+app.use('/', express.static(path.join(__dirname, '..', 'public')));
 app.use('/', routes);
 
 /** Get port from environment and store in Express. */

@@ -25,5 +25,4 @@ coverage
 
 # misc
 .DS_Store
-altScripts.js
 .env

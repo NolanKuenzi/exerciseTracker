@@ -12,7 +12,6 @@
   "scripts": {
     "start": "node ./server/index.js",
     "devstart": "nodemon ./server/index.js",
-    "build": "webpack --mode production --config config/webpack.prod.config.js --env.PLATFORM=production --env.VERSION=stag --progress",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
     "test": "jest",

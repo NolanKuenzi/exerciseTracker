@@ -12,6 +12,11 @@ npm-debug.log*
 # Optional npm cache directory
 .npm
 
+# client
+/client/node_modules
+/client/dist
+/client/src/static
+
 # Optional REPL history
 .node_repl_history
 
@@ -20,7 +25,5 @@ coverage
 
 # misc
 .DS_Store
-/altApis
-/server/indexBackUp.js
-/server/altScripts.js
-/server/.env
+altScripts.js
+.env

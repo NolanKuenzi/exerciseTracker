@@ -13,12 +13,6 @@
     "start": "node index.js",
     "devStart": "nodemon index.js"
   },
-  "lint-staged": {
-    "*.(js|jsx)": [
-      "npm run lint:write",
-      "git add"
-    ]
-  },
   "dependencies": {
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",

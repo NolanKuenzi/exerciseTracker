@@ -23,4 +23,4 @@ coverage
 /altApis
 /server/indexBackUp.js
 /server/altScripts.js
-/server/dbaseUrl.js
+/server/.env

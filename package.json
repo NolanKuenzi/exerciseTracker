@@ -1,5 +1,5 @@
 {
-  "name": "exerciseTracker",
+  "name": "exercise_tracker",
   "version": "1.0.0",
   "engines": {
     "node": "10.5.0"
@@ -12,6 +12,7 @@
   "scripts": {
     "start": "node ./server/index.js",
     "devstart": "nodemon ./server/index.js",
+    "build": "webpack --mode production --config config/webpack.prod.config.js --env.PLATFORM=production --env.VERSION=stag --progress",
     "lint": "eslint --debug src/",
     "lint:write": "eslint --debug src/ --fix",
     "test": "jest",
@@ -63,7 +64,7 @@
     "mini-css-extract-plugin": "^0.4.3",
     "node-sass": "^4.8.3",
     "nodemon": "^1.18.11",
-    "optimize-css-assets-webpack-plugin": "^4.0.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.1",
     "prettier": "^1.17.0",
     "react-testing-library": "^6.1.2",
     "sass-loader": "^7.0.3",

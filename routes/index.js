@@ -41,13 +41,13 @@ function filter_delete(query) {
       let getLog = data[0].log.slice(0);
       getLog.sort((a, b) => new Date(a.date) - new Date(b.date));
       if (query.from !== undefined) {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(query.from) === false) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(query.from) === false || new Date(query.from).toString() === 'Invalid Date') {
           throw 'Invalid date';
         }
       getLog = getLog.filter(item => new Date(item.date) >= new Date(query.from));
       }
       if (query.to !== undefined) {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(query.to) === false) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(query.to) === false || new Date(query.to).toString() === 'Invalid Date') {
           throw 'Invalid date';
         }
         getLog = getLog.filter(item => new Date(item.date) <= new Date(query.to));
@@ -95,14 +95,18 @@ router.post('/api/exercise/add', function(req, res) {
    res.send('Please complete all input fields');
    return;
   }
-  if (/[\D]/.test(req.body.duration) === true) {
-    res.send('Duration field must contain a whole number');
+  if (req.body.description.length > 140) {
+    res.send('Description character limit of 140 has been exceeded'); 
     return;
-  } 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(req.body.date) === false) {
+  }
+  if (/[\D]/.test(req.body.duration) === true || req.body.duration.length > 10) {
+    res.send('Duration field must be a whole number and not exceed ten characters');
+    return;
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(req.body.date) === false || new Date(req.body.date).toString() === 'Invalid Date') {
    res.send('Invalid date');
    return;
-  }
+  } 
   req.body.date = new Date(req.body.date + "UTC-7").toDateString();
   users.find({userId: req.body.userId}, {__v: 0})
     .exec(function(err, data) {

@@ -1,21 +1,24 @@
 import React from 'react';
-import NewUser from './newUser';
-import AddExercises from './addExercises';
-import AppInformation from './appInfo';
+import NewUser from '../containers/newUser';
+import AddExercises from '../containers/addExercises';
+import ExerciseLog from '../containers/exerciseLog';
+import Display from './display';
 import Footer from './footer';
 
 const ExerciseTracker = () => {
   return (
-    <div>
+    <div id="exerciseTrackerDiv">
       <h1>Exercise Tracker</h1>
       <div id="exerciseTrackerBlocks">
         <NewUser />
         <AddExercises />
+        <ExerciseLog />
       </div>
-      <AppInformation />
+      <Display />
       <Footer />
     </div>
   );
 };
 
 export default ExerciseTracker;
+

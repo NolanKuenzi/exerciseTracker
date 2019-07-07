@@ -4,13 +4,14 @@ module.exports = {
 		browser: true,
 		node: true,
 	},
-	extends: ['airbnb', 'plugin:jest/recommended', 'jest-enzyme'],
+	extends: ['airbnb', 'plugin:jest/recommended'],
 	plugins: [
 		'babel',
 		'import',
 		'jsx-a11y',
 		'react',
 		'prettier',
+		'react-hooks',
 	],
 	parser: 'babel-eslint',
 	parserOptions: {
@@ -49,13 +50,15 @@ module.exports = {
 		'react/no-unused-prop-types': 'off', // Is still buggy
 		'react/jsx-one-expression-per-line': 'off',
 
-		"jsx-a11y/anchor-is-valid": ["error", { "components": ["Link"], "specialLink": ["to"] }],
-		"jsx-a11y/label-has-for": [2, {
-			"required": {
-				"every": ["id"]
+		'jsx-a11y/anchor-is-valid': ['error', { 'components': ['Link'], 'specialLink': ['to'] }],
+		'jsx-a11y/label-has-for': [2, {
+			'required': {
+				'every': ['id']
 			}
 		}], // for nested label htmlFor error
 
 		'prettier/prettier': ['error'],
+		'react-hooks/rules-of-hooks': "error",
+		'react-hooks/exhaustive-deps': 'warn'
 	},
 };

@@ -1,20 +1,23 @@
 import React from 'react';
-import { render, cleanup } from 'react-testing-library';
-import NewUser from './newUser';
+import { render, cleanup } from '@testing-library/react';
+import NewUser from '../containers/newUser';
+import { StoreProvider } from '../store';
 
 afterEach(cleanup);
 
 const RenderComponent = () => {
-  return render(<NewUser />);
+  return render(
+    <StoreProvider>
+      <NewUser />
+    </StoreProvider>,
+  );
 };
 
-describe('New User Component', () => {
+describe('<NewUser /> Component', () => {
   test('It contains a POST route, input box, and a button', () => {
     const { getByTestId } = RenderComponent();
     const userContainerTest = getByTestId('userContainerTest');
-    const userNameInput = getByTestId('userNameInputTest');
     expect(userContainerTest.textContent).toContain('POST /api/exercise/new-user');
-    expect(userNameInput.textContent).toBe('');
     expect(userContainerTest.textContent).toContain('Submit');
   });
 });

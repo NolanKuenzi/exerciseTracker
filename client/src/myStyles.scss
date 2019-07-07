@@ -1,32 +1,40 @@
+/* shared */
+
 body {
   background: grey;
 }
 
 h1 {
-  margin-left: 1em;
-  margin-bottom: 0.2em;
-  margin-top: 1em;
+  margin-top: 0.5em;
+  margin-bottom: -0.1em;
+  text-align: center;
+  text-decoration: underline;
+}
+
+#exerciseTrackerDiv {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 #exerciseTrackerBlocks {
   display: flex;
   flex-direction: row;
-  align-content: left;
-  margin-left: 1em;
+  justify-content: center;
   flex-wrap: wrap;
+  margin-top: 1em;
+  margin-left: 0.1em;
 }
 
-#newUserContainer {
-  height: 13em;
-  width: 22em;
+.inputDivs {
+  height: 22.5em;
+  width: 22.5em;
   background: #2eb82e;
-  border-radius: 0.5em;
-  margin-top: 10em;
-  margin-right: 0.2em;
-}
-
-#newUserText {
-  padding-top: 2em;
+  border: 0.3em solid #ffff66;
+  margin-top: 1em;
+  margin-right: 0.5em;
+  margin-left: 0.5em;
 }
 
 .headings {
@@ -34,62 +42,88 @@ h1 {
   margin-left: 1em;
 }
 
-.postSpan {
-  background-color: #ffff66;
-}
-
-#userNameInput {
-  width: 25.05em;
-  padding-bottom: 0.6em;
-  font-size: 0.8em;
-  height: 0.8em;
-  margin-top: 1em;
-}
-
-#addExercisesContainer {
-  height: 22em;
-  width: 22em;
-  background: #2eb82e;
-  border-radius: 0.5em;
-  margin-top: 1em;
-}
-
 div input {
   margin-top: 1em;
-  width: 25.05em;
+  width: 25.5em;
   font-size: 0.8em;
   height: 0.8em;
   padding-bottom: 0.6em;
+  border: 0.2em solid grey;
+  outline: none;
 }
 
 button {
   margin-top: 1em;
+  border: 0.2em solid white;
   border-radius: 0.1em;
-  border-color: white;
-  border-width: 0.1em;
-  width: 29.4em;
-  padding-bottom: 0.6em;
+  width: 29.7em;
+  padding: 2.3em;
   font-size: 0.7em;
-  height: 3em;
+  height: 3.5em;
   outline: none;
   background: grey;
   cursor: pointer;
+}
+
+button span {
+  font-size: 1.3em;
 }
 
 button:active {
   transform: translateY(.4em);
 }
 
-#submitText {
-  font-size: 1.3em;
-  position: relative;
-  bottom: 0.25em;
+.displayErrs {
+  margin-top: 3em;
+  padding: 1em;
+  background: #2eb82e;
+  border: 0.3em solid #ffff66;
+  text-align: center;
 }
 
-#appInfoContainer {
-  margin-top: 2em;
+/* New User Component */ 
+
+#newUserText {
+  padding-top: 8.8em;
+}
+
+#displayNewUsr {
+  margin-top: 3em;
+  padding: 1.5em;
+  background: #2eb82e;
+  border: 0.3em solid #ffff66;
+  text-align: center;
+}
+
+/* Add Exercises Componen */
+
+.postSpan {
+  background-color: #ffff66;
+}
+
+#addExerciseDiv {
+  margin-top: 3em;
+  padding: 1em;
+  background: #2eb82e;
+  border: 0.3em solid #ffff66;
+  text-align: left;
+  position: relative;
+}
+
+/* Exercise Log Component */
+
+#logTop {
+  margin-top: -1.1em;
   margin-left: 1em;
-  font-size: 1.15em;
+}
+
+#eLogH3 {
+  margin-top: 2em;
+}
+
+#getSpan {
+  background-color: #ffff66;
+  font-size: 0.9em;
 }
 
 #getRoute {
@@ -97,8 +131,46 @@ button:active {
   font-size: 1em;
 }
 
-#footer {
-  margin-top: 6em;
+#eLogDiv {
+  padding: 1em;
   text-align: center;
+  background-color: #2eb82e;
+  border: 0.3em solid #ffff66;
+  margin-top: 1em;
+}
 
+ul {
+  list-style-type: none;
+}
+
+li {
+  margin-top: 0.5em;
+  padding: 1em;
+  margin-left: -2.5em;
+  background-color: white;
+  border: 0.3em solid grey;
+  text-align: left;
+  position: relative;
+}
+
+.logButtonClass {
+  margin-top: -1em;
+  text-align: right;
+  margin-bottom: 0.5em;
+}
+
+.logButton {
+  height: 2em;
+  width: 2em;
+  text-align: center;
+  background-color: white;
+  padding: 0em;
+  border: 0.2em solid grey;
+}
+
+/* Footer */
+
+#footer {
+  margin-top: 2em;
+  text-align: center;
 }

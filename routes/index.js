@@ -7,10 +7,10 @@ const { sanitizeBody, sanitizeQuery } = require('express-validator/filter');
 router.post('/api/exercise/new-user', [
   body('userName')
     .not().isEmpty().withMessage('Invalid username')
+    .trim()
     .isLength({max: 25}).withMessage('Username length of 25 characters has been exceeded'),
   sanitizeBody('userName')
     .escape()
-    .trim()
 ], 
 function(req, res) {
   const errors = validationResult(req);
@@ -44,18 +44,23 @@ function(req, res) {
 });
 router.post('/api/exercise/add', [
   body('userId')
-    .not().isEmpty().withMessage('Please complete all input fields'),
+    .not().isEmpty().withMessage('Please complete all input fields')
+    .trim(),
+  sanitizeBody('userId')
+    .escape(),
   body('description')
     .not().isEmpty().withMessage('Please complete all input fields')
+    .trim()
     .isLength({max: 140}).withMessage('Description character limit of 140 has been exceeded'),
   sanitizeBody('description')
-    .escape()
-    .trim(),
+    .escape(),
   body('duration')
     .not().isEmpty().withMessage('Please complete all input fields')
     .trim()
     .matches(/^\d+$/).withMessage('Duration field must be a whole number and not exceed ten characters')
     .isLength({max: 10}).withMessage('Duration field must be a whole number and not exceed ten characters'),
+  sanitizeBody('duration')
+    .escape(),
   body('date')
     .not().isEmpty().withMessage('Please complete all input fields')
     .trim()
@@ -66,6 +71,8 @@ router.post('/api/exercise/add', [
       }
       return true;
     }),
+  sanitizeBody('date')
+    .escape(),
 ],
 function(req, res) {
   const errors = validationResult(req);
@@ -103,7 +110,10 @@ function(req, res) {
 });
 router.get('/api/exercise/log?', [
   query('userId')
-    .not().isEmpty().withMessage('Please complete required input field'),
+    .not().isEmpty().withMessage('Please complete required input field')
+    .trim(),
+  sanitizeQuery('userId')
+    .escape(),
   query('from')
     .optional()
     .trim()
@@ -114,6 +124,8 @@ router.get('/api/exercise/log?', [
       }
       return true;
     }),
+  sanitizeQuery('from')
+    .escape(),
   query('to')
     .optional()
     .trim()
@@ -124,10 +136,14 @@ router.get('/api/exercise/log?', [
       }
       return true;
     }),
+  sanitizeQuery('to')
+    .escape(),
   query('limit')
     .optional()
     .trim()
-    .matches(/^\d+$/).withMessage('Limit must be a number')
+    .matches(/^\d+$/).withMessage('Limit must be a number'),
+  sanitizeQuery('limit')
+    .escape(),
 ],
 function(req, res) {
   const errors = validationResult(req);
@@ -146,7 +162,6 @@ function(req, res) {
     res.json('Error: Unable to access data');
   }
 });
-// body query
 router.delete('/api/exercise/delete', [
   body('from')
     .optional()
@@ -158,6 +173,8 @@ router.delete('/api/exercise/delete', [
       }
       return true;
     }),
+  sanitizeBody('from')
+    .escape(),
   body('to')
     .optional()
     .trim()
@@ -168,10 +185,14 @@ router.delete('/api/exercise/delete', [
       }
       return true;
     }),
+  sanitizeBody('to')
+    .escape(),
   body('limit')
     .optional()
     .trim()
-    .matches(/^\d+$/).withMessage('Limit must be a number')
+    .matches(/^\d+$/).withMessage('Limit must be a number'),
+  sanitizeBody('limit')
+    .escape(),
 ], 
 function(req, res) {
   const errors = validationResult(req);

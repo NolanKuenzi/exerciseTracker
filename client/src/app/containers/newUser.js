@@ -15,13 +15,11 @@ const NewUser = () => {
   const newUserSubmit = async event => {
     event.preventDefault();
     event.persist();
+    // https://sleepy-springs-16191.herokuapp.com/api/exercise/new-user
     try {
-      const getData = await axios.post(
-        'https://sleepy-springs-16191.herokuapp.com/api/exercise/new-user',
-        {
-          userId: document.getElementsByName('userId')[0].value,
-        },
-      );
+      const getData = await axios.post('http://localhost:3000/api/exercise/new-user', {
+        userName: document.getElementsByName('userName')[0].value,
+      });
       /* eslint-disable */
       const response = await getData;
       const newUserDiv = (
@@ -52,7 +50,7 @@ const NewUser = () => {
               type="text"
               placeholder="username"
               className="headings"
-              name="userId"
+              name="userName"
             />
             <button className="headings" type="submit" id="newUserSubmit">
               <span>Submit</span>

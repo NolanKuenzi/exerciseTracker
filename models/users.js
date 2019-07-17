@@ -3,15 +3,12 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     userId: {
       type: String,
-      unique: true,
     },
     username: {
         type: String,
-        unique: true,
     },
     count: {
       type: String,
-      unique: true,
     },
     log: [
            {
@@ -19,22 +16,18 @@ const userSchema = new mongoose.Schema({
 
              logId: {
               type: String,
-              unique: true,
              },
              description: {
                type: String,
-               unique: true,
             },
              duration: {
                type: String,
-               unique: true,
             },
              date: {
                type: String,
-               unique: true,
             },
         }
     ],
 });
 
-module.exports = mongoose.model('users', userSchema);
+module.exports = mongoose.models.users ||  mongoose.model('users', userSchema);

@@ -2,7 +2,9 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
+const expressValidator = require('express-validator');
 const cors = require('cors');
+const helmet = require('helmet');
 require('dotenv').config();
 
 // data-base
@@ -14,13 +16,13 @@ mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true }).catch((err
 const app = express();
 const routes = require('./routes');
 
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(expressValidator());
 app.use(cors({optionSuccessStatus: 200}));
- 
-// Point static path to dist
 
+// Point static path to dist
 app.use('/', express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 
@@ -32,3 +34,4 @@ app.set('port', port);
 const server = http.createServer(app);
 /** Listen on provided port, on all network interfaces. */
 server.listen(port, () => console.log(`Server Running on port ${port}`));
+module.exports = server;

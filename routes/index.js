@@ -1,158 +1,193 @@
 const router = require('express').Router();
 const users = require('../models/users');
+const routeFunctions = require('../controllers/routeFunctions');
+const { body, query, validationResult} = require('express-validator/check');
+const { sanitizeBody, sanitizeQuery } = require('express-validator/filter');
 
-function idGenerator() {
-  const possibleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.split('');
-  const randFunc = () => possibleChars[Math.floor(Math.random() * 62)]; 
-  const idString = [];
-  let idStringCount = 0;
-  while (idStringCount < 9) {
-    idString.push(randFunc());
-    idStringCount++;
-  }
-  return idString.join('');
-}
-function filter_delete(query) {
-  return new Promise(function(resolve, reject) {
-    users.find({userId: query.userId}, {__v: 0})
+router.post('/api/exercise/new-user', [
+  body('userName')
+    .not().isEmpty().withMessage('Invalid username')
+    .isLength({max: 25}).withMessage('Username length of 25 characters has been exceeded'),
+  sanitizeBody('userName')
+    .escape()
+    .trim()
+], 
+function(req, res) {
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.json(errors.array()[0].msg);
+      return;
+    } 
+  users.find({}, {_id: 0, count: 0, log: 0, __v: 0})
     .exec(function(err, data) {
       if (err) {
-        reject('unable to access database');
+        res.json("Error: Unable to access data");
         return;
       }
-      if (data.length === 0) {
-        reject('userId not recognized');
+    const findUser = data.filter(item => item.username === req.body.userName);
+      if (findUser.length === 1) {
+        res.json('Cannot create duplicate usernames');
         return;
-      }
-      if (query.logId !== undefined) {
-        let newLog = data[0].log.slice(0);
-        newLog = newLog.filter(item => item.logId !== query.logId);
-        newLog.sort((a, b) => new Date(a.date) - new Date(b.date));
-        data[0].log = newLog.slice(0);
-        const newCount = (parseInt(data[0].count, 10)) - 1;
-        data[0].count  = newCount;
-        data[0].save();
-        resolve(data);
       } else {
-        resolve(data);
+          return new Promise(function(resolve) {
+          const addNewUser = new users({userId: routeFunctions.idGenerator(), username: req.body.userName, count: '0', log: []});
+          addNewUser.save();
+          resolve(addNewUser)
+        }).then(function(addNewUser) {
+          res.json({userId: addNewUser.userId, username: addNewUser.username});
+        }).catch(function(error) {
+          console.log(error);
+          res.json('Error: Unable to access data');
+        });
       }
     });
-  }).then(function(data) {
-      let getLog = data[0].log.slice(0);
-      getLog.sort((a, b) => new Date(a.date) - new Date(b.date));
-      if (query.from !== undefined) {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(query.from) === false || new Date(query.from).toString() === 'Invalid Date') {
-          throw 'Invalid date';
-        }
-      getLog = getLog.filter(item => new Date(item.date) >= new Date(query.from));
-      }
-      if (query.to !== undefined) {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(query.to) === false || new Date(query.to).toString() === 'Invalid Date') {
-          throw 'Invalid date';
-        }
-        getLog = getLog.filter(item => new Date(item.date) <= new Date(query.to));
-      }
-      if (query.limit !== undefined) {
-        if (/[\D]/.test(query.limit) === true) {
-          throw 'Limit must be a number';
-        }
-        if (query.limit < getLog.length) {
-          getLog = getLog.slice(0, query.limit);
-        }
-      }
-      data[0].log = getLog;
-      return data[0];
-  }).catch(function(error) {
-      console.log(error);
-      return error;
-  });
-}
-router.post('/api/exercise/new-user', function(req, res) {
-  if (/\S/.test(req.body.userId) === false) {
-    res.send('Invalid username');
-    return;
-  }
-  users.find({}, {_id: 0, count: 0, log: 0, __v: 0})
-   .exec(function(err, data) {
-    if (err) {
-      res.send("Error: Unable to access data");
-      return;
-    }
-    const findUser = data.filter(item => item.username === req.body.userId);
-    if (findUser.length === 1) {
-      res.send('Cannot create duplicate usernames');
-      return;
-    } else {
-      const addNewUser = new users({userId: idGenerator(), username: req.body.userId, count: '0', log: []});
-      addNewUser.save();
-      res.json({userId: addNewUser.userId, username: addNewUser.username});
-    }
-  });
 });
-router.post('/api/exercise/add', function(req, res) {
-  const emptyTest = /\S/;
-  if (emptyTest.test(req.body.userId) === false || emptyTest.test(req.body.description) === false || emptyTest.test(req.body.duration) === false || emptyTest.test(req.body.date) === false) {
-   res.send('Please complete all input fields');
-   return;
-  }
-  if (req.body.description.length > 140) {
-    res.send('Description character limit of 140 has been exceeded'); 
-    return;
-  }
-  if (/[\D]/.test(req.body.duration) === true || req.body.duration.length > 10) {
-    res.send('Duration field must be a whole number and not exceed ten characters');
-    return;
-  }
-  if (/^\d{4}-\d{2}-\d{2}$/.test(req.body.date) === false || new Date(req.body.date).toString() === 'Invalid Date') {
-   res.send('Invalid date');
-   return;
-  } 
+router.post('/api/exercise/add', [
+  body('userId')
+    .not().isEmpty().withMessage('Please complete all input fields'),
+  body('description')
+    .not().isEmpty().withMessage('Please complete all input fields')
+    .isLength({max: 140}).withMessage('Description character limit of 140 has been exceeded'),
+  sanitizeBody('description')
+    .escape()
+    .trim(),
+  body('duration')
+    .not().isEmpty().withMessage('Please complete all input fields')
+    .trim()
+    .matches(/^\d+$/).withMessage('Duration field must be a whole number and not exceed ten characters')
+    .isLength({max: 10}).withMessage('Duration field must be a whole number and not exceed ten characters'),
+  body('date')
+    .not().isEmpty().withMessage('Please complete all input fields')
+    .trim()
+    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Invalid date')
+    .custom(function(date) {
+      if (new Date(date).toString() === 'Invalid Date') {
+        throw new Error('Invalid date')
+      }
+      return true;
+    }),
+],
+function(req, res) {
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.json(errors.array()[0].msg);
+      return;
+    } 
   req.body.date = new Date(req.body.date + "UTC-7").toDateString();
   users.find({userId: req.body.userId}, {__v: 0})
     .exec(function(err, data) {
       if (err) {
-        res.send('Error: Unable to access data');
+        res.json('Error: Unable to access data');
         return;
       }
       if (data.length < 1) {
-        res.send('userId not recognized');
+        res.json('userId not recognized');
         return;
       } else {
-          const newCount = (parseInt(data[0].count, 10)) + 1;
-          const newEntry = {logId: idGenerator(), description: req.body.description, duration: req.body.duration, date: req.body.date};
-          data[0].count = newCount;
-          data[0].log.push(newEntry);
-          data[0].save();
-          res.json({userId: req.body.userId, username: data[0].username, description: newEntry.description, duration: newEntry.duration, date: newEntry.date, count: newCount});
+          return new Promise(function(resolve) {
+            const newCount = (parseInt(data[0].count, 10)) + 1;
+            const newEntry = {logId: routeFunctions.idGenerator(), description: req.body.description, duration: req.body.duration, date: req.body.date};
+            data[0].count = newCount;
+            data[0].log.push(newEntry);
+            data[0].save();
+            const input = {newCount: newCount, newEntry: newEntry};
+            resolve(input);
+          }).then(function(input) {
+            res.json({userId: req.body.userId, username: data[0].username, description: input.newEntry.description, duration: input.newEntry.duration, date: input.newEntry.date, count: input.newCount});
+          }).catch(function(error) {
+            console.log(error);
+            res.json('Error: Unable to access data');
+          });
         }
     });
 });
-router.get('/api/exercise/log?', function(req, res) {
-  if (req.query.userId === undefined) {
-    res.send('Please complete all required input fields');
-    return;
-  };
+router.get('/api/exercise/log?', [
+  query('userId')
+    .not().isEmpty().withMessage('Please complete required input field'),
+  query('from')
+    .optional()
+    .trim()
+    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Invalid date')
+    .custom(function(date) {
+      if (new Date(date).toString() === 'Invalid Date') {
+        throw new Error('Invalid date')
+      }
+      return true;
+    }),
+  query('to')
+    .optional()
+    .trim()
+    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Invalid date')
+    .custom(function(date) {
+      if (new Date(date).toString() === 'Invalid Date') {
+        throw new Error('Invalid date')
+      }
+      return true;
+    }),
+  query('limit')
+    .optional()
+    .trim()
+    .matches(/^\d+$/).withMessage('Limit must be a number')
+],
+function(req, res) {
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.json(errors.array()[0].msg);
+      return;
+    } 
   try {
     const getData = async input => {
-      const rtrnData = await filter_delete(input);
-      res.send(rtrnData);
+      const rtrnData = await routeFunctions.filter_delete(input);
+      res.json(rtrnData);
     };
     getData(req.query);
   } catch(error) {
     console.log(error);
-    res.send('Error: Unable to access data');
+    res.json('Error: Unable to access data');
   }
 });
-router.delete('/api/exercise/delete', function(req, res) {
+// body query
+router.delete('/api/exercise/delete', [
+  body('from')
+    .optional()
+    .trim()
+    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Invalid date')
+    .custom(function(date) {
+      if (new Date(date).toString() === 'Invalid Date') {
+        throw new Error('Invalid date')
+      }
+      return true;
+    }),
+  body('to')
+    .optional()
+    .trim()
+    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Invalid date')
+    .custom(function(date) {
+      if (new Date(date).toString() === 'Invalid Date') {
+        throw new Error('Invalid date')
+      }
+      return true;
+    }),
+  body('limit')
+    .optional()
+    .trim()
+    .matches(/^\d+$/).withMessage('Limit must be a number')
+], 
+function(req, res) {
+  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.json(errors.array()[0].msg);
+      return;
+    } 
   try {
     const getData = async input => {
-      const rtrnData = await filter_delete(input);
-      res.send(rtrnData);
+      const rtrnData = await routeFunctions.filter_delete(input);
+      res.json(rtrnData);
     };
     getData(req.body);
   } catch(error) {
     console.log(error);
-    res.send('Error: Unable to access data');
+    res.json('Error: Unable to access data');
   }
-}); 
+});
 module.exports = router;

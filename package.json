@@ -11,13 +11,20 @@
   "license": "MIT",
   "scripts": {
     "start": "node index.js",
-    "devStart": "nodemon index.js"
+    "devStart": "nodemon index.js",
+    "test": "node ./node_modules/mocha/bin/mocha -w"
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "cors": "^2.8.5",
     "dotenv": "^8.0.0",
+    "expre": "^0.1.1",
     "express": "^4.16.4",
+    "express-validator": "^5.3.1",
+    "helmet": "^3.18.0",
+    "mocha": "^6.1.4",
     "mongoose": "^5.5.2"
   },
   "devDependencies": {

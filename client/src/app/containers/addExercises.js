@@ -62,7 +62,7 @@ const AddExercises = () => {
           <input type="text" placeholder="userId*" className="headings" name="userId" />
           <input type="text" placeholder="description*" className="headings" name="description" />
           <input type="text" placeholder="duration* (mins.)" className="headings" name="duration" />
-          <input type="text" placeholder="date* (yyyy-mm-dd)" className="headings" name="date" />
+          <input type="text" placeholder="date (yyyy-mm-dd)" className="headings" name="date" />
         </div>
         <button className="headings" type="submit" id="addExercisesSubmit">
           <span>Submit</span>

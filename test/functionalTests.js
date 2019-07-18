@@ -91,7 +91,7 @@ describe('Tests', function() {
         if (err) {
           return done(err);
         }
-        assert.equal(res.body, 'Please complete all input fields');
+        assert.equal(res.body, 'Please complete required input fields');
         done();
       });
     });

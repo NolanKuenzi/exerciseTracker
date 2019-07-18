@@ -44,29 +44,38 @@ function(req, res) {
 });
 router.post('/api/exercise/add', [
   body('userId')
-    .not().isEmpty().withMessage('Please complete all input fields')
+    .not().isEmpty().withMessage('Please complete required input fields')
     .trim(),
   sanitizeBody('userId')
     .escape(),
   body('description')
-    .not().isEmpty().withMessage('Please complete all input fields')
+    .not().isEmpty().withMessage('Please complete required input fields')
     .trim()
     .isLength({max: 140}).withMessage('Description character limit of 140 has been exceeded'),
   sanitizeBody('description')
     .escape(),
   body('duration')
-    .not().isEmpty().withMessage('Please complete all input fields')
+    .not().isEmpty().withMessage('Please complete required input fields')
     .trim()
     .matches(/^\d+$/).withMessage('Duration field must be a whole number and not exceed ten characters')
     .isLength({max: 10}).withMessage('Duration field must be a whole number and not exceed ten characters'),
   sanitizeBody('duration')
     .escape(),
   body('date')
-    .not().isEmpty().withMessage('Please complete all input fields')
     .trim()
-    .matches(/^\d{4}-\d{2}-\d{2}$/).withMessage('Invalid date')
-    .custom(function(date) {
-      if (new Date(date).toString() === 'Invalid Date') {
+    .custom(function(date, bodyObj) {
+      if (date === '') {
+          bodyObj.req.body.date = new Date().toISOString().slice(0,10);
+          return true;
+      } else {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(bodyObj.req.body.date) === false) {
+          throw new Error('Invalid date')
+        }
+        return true;
+      }
+    })
+    .custom(function(date, bodyObj) {
+      if (new Date(bodyObj.req.body.date).toString() === 'Invalid Date') {
         throw new Error('Invalid date')
       }
       return true;

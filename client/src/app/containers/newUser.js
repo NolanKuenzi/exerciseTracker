@@ -33,8 +33,11 @@ const NewUser = () => {
       newData(newUsrData);
       event.target.reset();
     } catch (error) {
-      console.log(error);
-      newData('Error: Unable to access data');
+      if (error.response !== undefined) {
+        newData(error.response.data);
+        return;
+      }
+      newData('An error occurred while connecting to MongoDB Atlas');
     }
   };
   return (

@@ -25,7 +25,8 @@ describe('Tests', function() {
           if (err) {
             return done(err);
           }
-          assert.equal(res.body.username, 'testUser')
+          assert.equal(res.status, 200);
+          assert.equal(res.body.username, 'testUser');
           done();  
         });
     }); 
@@ -39,7 +40,8 @@ describe('Tests', function() {
             if (err) {
               return done(err);
             }
-            assert.equal(res.body, 'Cannot create duplicate usernames')
+            assert.equal(res.status, 400);
+            assert.equal(res.body, 'Cannot create duplicate usernames');
             done();  
           });
       });
@@ -53,7 +55,8 @@ describe('Tests', function() {
             if (err) {
               return done(err);
             }
-            assert.equal(res.body, 'Username length of 25 characters has been exceeded')
+            assert.equal(res.status, 400);
+            assert.equal(res.body, 'Username length of 25 characters has been exceeded');
             done();  
           });
       });
@@ -63,6 +66,7 @@ describe('Tests', function() {
       const addUser = await chai.request(server)
       .post('/api/exercise/new-user')
       .send({userName: 'testUser_2'});
+      assert.equal(addUser.status, 200);
       
       const addExercise = await chai.request(server)
         .post('/api/exercise/add')
@@ -71,12 +75,13 @@ describe('Tests', function() {
           description: 'Jumping Jacks',
           duration: 33,
           date: '2019-10-22',
-        });
-        assert.equal(typeof addExercise.body.userId, 'string');
-        assert.equal(addExercise.body.username, 'testUser_2');
-        assert.equal(addExercise.body.description, 'Jumping Jacks');
-        assert.equal(addExercise.body.duration, 33);
-        assert.equal(addExercise.body.date, 'Tue Oct 22 2019');
+        })
+          assert.equal(addExercise.status, 200);
+          assert.equal(typeof addExercise.body.userId, 'string');
+          assert.equal(addExercise.body.username, 'testUser_2');
+          assert.equal(addExercise.body.description, 'Jumping Jacks');
+          assert.equal(addExercise.body.duration, 33);
+          assert.equal(addExercise.body.date, 'Tue Oct 22 2019');
     });
     it('Every field is NOT filled in', function(done) { 
       chai.request(server)
@@ -91,6 +96,7 @@ describe('Tests', function() {
         if (err) {
           return done(err);
         }
+        assert.equal(res.status, 400);
         assert.equal(res.body, 'Please complete required input fields');
         done();
       });
@@ -108,6 +114,7 @@ describe('Tests', function() {
         if (err) {
           return done(err);
         }
+        assert.equal(res.status, 400);
         assert.equal(res.body, 'Description character limit of 140 has been exceeded');
         done();
       });
@@ -125,6 +132,7 @@ describe('Tests', function() {
         if (err) {
           return done(err);
         }
+        assert.equal(res.status, 400);
         assert.equal(res.body, 'Duration field must be a whole number and not exceed ten characters');
         done();
       });
@@ -142,6 +150,7 @@ describe('Tests', function() {
         if (err) {
           return done(err);
         }
+        assert.equal(res.status, 400);
         assert.equal(res.body, 'Duration field must be a whole number and not exceed ten characters');
         done();
       });
@@ -159,6 +168,7 @@ describe('Tests', function() {
         if (err) {
           return done(err);
         }
+        assert.equal(res.status, 400);
         assert.equal(res.body, 'Invalid date');
         done();
       });
@@ -176,6 +186,7 @@ describe('Tests', function() {
         if (err) {
           return done(err);
         }
+        assert.equal(res.status, 404);
         assert.equal(res.body, 'userId not recognized');
         done();
       });
@@ -208,7 +219,8 @@ describe('Tests', function() {
         });
         /* Request log information */
         const getLog = await chai.request(server)
-          .get(`/api/exercise/log?userId=${addUser.body.userId}`);
+        .get(`/api/exercise/log?userId=${addUser.body.userId}`);
+        assert.equal(getLog.status, 200);
         assert.equal(typeof getLog.body.log[0].logId, 'string');
         assert.equal(getLog.body.log[0].description, 'Running');
         assert.equal(getLog.body.log[0].duration, 40);
@@ -252,6 +264,7 @@ describe('Tests', function() {
         /* Request filtered log information */ 
         const getFilteredLog = await chai.request(server)
         .get(`/api/exercise/log?userId=${addUser.body.userId}&from=2019-12-20&to=2020-01-05`);
+        assert.equal(getFilteredLog.status, 200);
         assert.equal(typeof getFilteredLog.body.log[0].logId, 'string');
         assert.equal(getFilteredLog.body.log[0].description, 'Yoga');
         assert.equal(getFilteredLog.body.log[0].duration, 65);
@@ -291,6 +304,7 @@ describe('Tests', function() {
         });
         const getFilteredLog = await chai.request(server)
         .get(`/api/exercise/log?userId=${addUser.body.userId}&limit=2`);
+        assert.equal(getFilteredLog.status, 200);
         assert.equal(typeof getFilteredLog.body.log[0].logId, 'string');
         assert.equal(getFilteredLog.body.log[0].description, 'Pull-Ups');
         assert.equal(getFilteredLog.body.log[0].duration, 15);
@@ -306,6 +320,7 @@ describe('Tests', function() {
     it('userId is undefined', async function() {
       const getFilteredLog = await chai.request(server)
       .get(`/api/exercise/log?userId=`);
+      assert.equal(getFilteredLog.status, 400);
       assert.equal(getFilteredLog.body, 'Please complete required input field');
     });
   });
@@ -342,6 +357,7 @@ describe('Tests', function() {
           userId: addUser.body.userId,
           logId: getLog.body.log[0].logId,
         });
+        assert.equal(delRtrnLog.status, 200);
         assert.equal(delRtrnLog.body.log[0].logId, getLog.body.log[1].logId);
         assert.equal(delRtrnLog.body.log[0].description, 'Pilates');
         assert.equal(delRtrnLog.body.log[0].duration, 38);
@@ -411,7 +427,8 @@ describe('Tests', function() {
            from: '2020-04-12',
            to: '2020-05-16',
            limit: 3,
-         });         
+         });    
+         assert.equal(delFiltered_Rtrn.status, 200);     
          assert.equal(delFiltered_Rtrn.body.log[0].logId, getLog.body.log[1].logId);
          assert.equal(delFiltered_Rtrn.body.log[0].description, 'Pilates');
          assert.equal(delFiltered_Rtrn.body.log[0].duration, 48);
@@ -432,6 +449,7 @@ describe('Tests', function() {
     it('userId not recognized', async function() {
       const getLog = await chai.request(server)
       .get(`/api/exercise/log?userId=d39dk3ndi`);
+      assert.equal(getLog.status, 404);
       assert.equal(getLog.body, 'userId not recognized');
     });
     it('Invalid "for" filter', async function() {
@@ -465,7 +483,8 @@ describe('Tests', function() {
         userId: addUser.body.userId,
         logId: getLog.body.log[0].logId,
         from: '2020-07-50',
-      });  
+      });
+      assert.equal(deleteReq.status, 400); 
       assert.equal(deleteReq.body, 'Invalid date');
     });
     it('Invalid "to" filter', async function() {
@@ -491,6 +510,7 @@ describe('Tests', function() {
       });
       const getLog = await chai.request(server)
       .get(`/api/exercise/log?userId=${addUser.body.userId}&to=2020-80-16`);
+      assert.equal(getLog.status, 400);
       assert.equal(getLog.body, 'Invalid date');
     });
     it('Invalid "limit" filter', async function() {
@@ -532,7 +552,8 @@ describe('Tests', function() {
         userId: addUser.body.userId,
         logId: getLog.body.log[0].logId,
         limit: 'One',
-      });  
+      });
+      assert.equal(deleteReq.status, 400);
       assert.equal(deleteReq.body, 'Limit must be a number');
     });
   });

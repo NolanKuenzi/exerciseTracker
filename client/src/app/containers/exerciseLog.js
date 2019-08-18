@@ -66,8 +66,11 @@ const ExerciseLog = () => {
       const response = await deleteData;
       renderData(response.data);
     } catch (error) {
-      console.log(error);
-      newData('Error: Unable to access data');
+      if (error.response !== undefined) {
+        renderData(error.response.data);
+        return;
+      }
+      renderData('Error: Unable to access data');
     }
   };
   const exerciseLogSubmit = async event => {
@@ -88,8 +91,11 @@ const ExerciseLog = () => {
       const response = await getData;
       renderData(response.data);
     } catch (error) {
-      console.log(error);
-      newData('Error: Unable to access data');
+      if (error.response !== undefined) {
+        renderData(error.response.data);
+        return;
+      }
+      renderData('Error: Unable to access data');
     }
   };
   return (

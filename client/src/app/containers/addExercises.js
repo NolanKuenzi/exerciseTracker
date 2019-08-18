@@ -47,7 +47,10 @@ const AddExercises = () => {
         event.target.reset();
       } 
     } catch (error) {
-      console.log(error);
+      if (error.response !== undefined) {
+        newData(error.response.data);
+        return;
+      } 
       newData('Error: Unable to access data');
     }
   };

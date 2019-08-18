@@ -2,7 +2,6 @@ const express = require('express');
 const path = require('path');
 const http = require('http');
 const bodyParser = require('body-parser');
-const expressValidator = require('express-validator');
 const cors = require('cors');
 const helmet = require('helmet');
 require('dotenv').config();
@@ -19,7 +18,6 @@ const routes = require('./routes');
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(expressValidator());
 app.use(cors({optionSuccessStatus: 200}));
 
 // Point static path to dist

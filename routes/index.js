@@ -1,8 +1,7 @@
 const router = require('express').Router();
 const users = require('../models/users');
 const routeFunctions = require('../controllers/routeFunctions');
-const { body, query, validationResult} = require('express-validator/check');
-const { sanitizeBody, sanitizeQuery } = require('express-validator/filter');
+const { body, sanitizeBody, query, sanitizeQuery, validationResult } = require('express-validator');
 
 router.post('/api/exercise/new-user', [
   body('userName')
@@ -11,22 +10,22 @@ router.post('/api/exercise/new-user', [
     .isLength({max: 25}).withMessage('Username length of 25 characters has been exceeded'),
   sanitizeBody('userName')
     .escape()
-], 
+],
 function(req, res) {
   const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.json(errors.array()[0].msg);
+      res.status(400).json(errors.array()[0].msg);
       return;
     } 
   users.find({}, {_id: 0, count: 0, log: 0, __v: 0})
     .exec(function(err, data) {
       if (err) {
-        res.json("Error: Unable to access data");
+        res.status(500).json("Error: Unable to access data");
         return;
       }
     const findUser = data.filter(item => item.username === req.body.userName);
       if (findUser.length === 1) {
-        res.json('Cannot create duplicate usernames');
+        res.status(400).json('Cannot create duplicate usernames');
         return;
       } else {
           return new Promise(function(resolve) {
@@ -34,10 +33,9 @@ function(req, res) {
           addNewUser.save();
           resolve(addNewUser)
         }).then(function(addNewUser) {
-          res.json({userId: addNewUser.userId, username: addNewUser.username});
+          res.status(200).json({userId: addNewUser.userId, username: addNewUser.username});
         }).catch(function(error) {
-          console.log(error);
-          res.json('Error: Unable to access data');
+          res.status(500).json('Error: Unable to access data');
         });
       }
     });
@@ -86,18 +84,18 @@ router.post('/api/exercise/add', [
 function(req, res) {
   const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.json(errors.array()[0].msg);
+      res.status(400).json(errors.array()[0].msg);
       return;
     } 
   req.body.date = new Date(req.body.date + "UTC-7").toDateString();
   users.find({userId: req.body.userId}, {__v: 0})
     .exec(function(err, data) {
       if (err) {
-        res.json('Error: Unable to access data');
+        res.status(500).json('Error: Unable to access data');
         return;
       }
       if (data.length < 1) {
-        res.json('userId not recognized');
+        res.status(404).json('userId not recognized');
         return;
       } else {
           return new Promise(function(resolve) {
@@ -109,10 +107,9 @@ function(req, res) {
             const input = {newCount: newCount, newEntry: newEntry};
             resolve(input);
           }).then(function(input) {
-            res.json({userId: req.body.userId, username: data[0].username, description: input.newEntry.description, duration: input.newEntry.duration, date: input.newEntry.date, count: input.newCount});
+            res.status(200).json({userId: req.body.userId, username: data[0].username, description: input.newEntry.description, duration: input.newEntry.duration, date: input.newEntry.date, count: input.newCount});
           }).catch(function(error) {
-            console.log(error);
-            res.json('Error: Unable to access data');
+            res.status(500).json('Error: Unable to access data');
           });
         }
     });
@@ -157,18 +154,25 @@ router.get('/api/exercise/log?', [
 function(req, res) {
   const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.json(errors.array()[0].msg);
+      res.status(400).json(errors.array()[0].msg);
       return;
     } 
   try {
     const getData = async input => {
       const rtrnData = await routeFunctions.filter_delete(input);
-      res.json(rtrnData);
+      if (rtrnData === 'unable to access database') {
+        res.status(500).json(rtrnData);
+        return;
+      }
+      if (rtrnData === 'userId not recognized') {
+        res.status(404).json(rtrnData);
+        return;
+      }
+      res.status(200).json(rtrnData);
     };
     getData(req.query);
   } catch(error) {
-    console.log(error);
-    res.json('Error: Unable to access data');
+    res.status(500).json('Error: Unable to access data');
   }
 });
 router.delete('/api/exercise/delete', [
@@ -202,22 +206,21 @@ router.delete('/api/exercise/delete', [
     .matches(/^\d+$/).withMessage('Limit must be a number'),
   sanitizeBody('limit')
     .escape(),
-], 
+],
 function(req, res) {
   const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      res.json(errors.array()[0].msg);
+      res.status(400).json(errors.array()[0].msg);
       return;
     } 
   try {
     const getData = async input => {
       const rtrnData = await routeFunctions.filter_delete(input);
-      res.json(rtrnData);
+      res.status(200).json(rtrnData);
     };
     getData(req.body);
   } catch(error) {
-    console.log(error);
-    res.json('Error: Unable to access data');
+    res.status(500).json('Error: Unable to access data');
   }
 });
 module.exports = router;

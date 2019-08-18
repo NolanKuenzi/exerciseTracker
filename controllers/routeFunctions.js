@@ -40,21 +40,20 @@ module.exports = {
     }).then(function(data) {
         let getLog = data[0].log.slice(0);
         getLog.sort((a, b) => new Date(a.date) - new Date(b.date));
-        if (query.from !== undefined) {
+        if (query.from !== '') {
           getLog = getLog.filter(item => new Date(item.date) >= new Date(query.from));
         }
-        if (query.to !== undefined) {
+        if (query.to !== '') {
           getLog = getLog.filter(item => new Date(item.date) <= new Date(query.to));
         }
-        if (query.limit !== undefined) {
+        if (query.limit !== '') {
           if (query.limit < getLog.length) {
             getLog = getLog.slice(0, query.limit);
           }
         }
-        data[0].log = getLog;
+        data[0].log = getLog.slice(0);
         return data[0];
     }).catch(function(error) {
-        console.log(error);
         return error;
     }); 
   },

@@ -17,28 +17,22 @@ function(req, res) {
       res.status(400).json(errors.array()[0].msg);
       return;
     } 
-  users.find({}, {_id: 0, count: 0, log: 0, __v: 0})
-    .exec(function(err, data) {
-      if (err) {
-        res.status(500).json("Error: Unable to access data");
-        return;
-      }
+  users.find({}, {_id: 0, count: 0, log: 0, __v: 0}).then(function(data) {
     const findUser = data.filter(item => item.username === req.body.userName);
       if (findUser.length === 1) {
-        res.status(400).json('Cannot create duplicate usernames');
+        res.status(400).json('Username already exists. Please choose another username.');
         return;
       } else {
-          return new Promise(function(resolve) {
-          const addNewUser = new users({userId: routeFunctions.idGenerator(), username: req.body.userName, count: '0', log: []});
-          addNewUser.save();
-          resolve(addNewUser)
-        }).then(function(addNewUser) {
-          res.status(200).json({userId: addNewUser.userId, username: addNewUser.username});
-        }).catch(function(error) {
-          res.status(500).json('Error: Unable to access data');
-        });
-      }
-    });
+        const addNewUser = new users({userId: routeFunctions.idGenerator(), username: req.body.userName, count: '0', log: []});
+        addNewUser.save().then(function(newUsr) {
+          res.status(200).json({userId: newUsr.userId, username: newUsr.username});
+          }).catch(function(error) {
+            res.status(500).json(error.toString());
+          })
+        }
+    }).catch(function(error) {
+      res.status(500).json(error.toString());
+    })
 });
 router.post('/api/exercise/add', [
   body('userId')
@@ -88,31 +82,25 @@ function(req, res) {
       return;
     } 
   req.body.date = new Date(req.body.date + "UTC-7").toDateString();
-  users.find({userId: req.body.userId}, {__v: 0})
-    .exec(function(err, data) {
-      if (err) {
-        res.status(500).json('Error: Unable to access data');
-        return;
-      }
-      if (data.length < 1) {
-        res.status(404).json('userId not recognized');
-        return;
-      } else {
-          return new Promise(function(resolve) {
-            const newCount = (parseInt(data[0].count, 10)) + 1;
-            const newEntry = {logId: routeFunctions.idGenerator(), description: req.body.description, duration: req.body.duration, date: req.body.date};
-            data[0].count = newCount;
-            data[0].log.push(newEntry);
-            data[0].save();
-            const input = {newCount: newCount, newEntry: newEntry};
-            resolve(input);
-          }).then(function(input) {
-            res.status(200).json({userId: req.body.userId, username: data[0].username, description: input.newEntry.description, duration: input.newEntry.duration, date: input.newEntry.date, count: input.newCount});
-          }).catch(function(error) {
-            res.status(500).json('Error: Unable to access data');
-          });
-        }
-    });
+  users.find({userId: req.body.userId}, {__v: 0}).then(function(data) {
+    if (data.length < 1) {
+      res.status(404).json('userId not recognized');
+      return;
+    } else {
+      const newCount = (parseInt(data[0].count, 10)) + 1;
+      const newEntry = {logId: routeFunctions.idGenerator(), description: req.body.description, duration: req.body.duration, date: req.body.date};
+      data[0].count = newCount;
+      data[0].log.push(newEntry);
+      data[0].save().then(function(data) {
+        const input = {newCount: newCount, newEntry: newEntry};
+        res.status(200).json({userId: req.body.userId, username: data.username, description: input.newEntry.description, duration: input.newEntry.duration, date: input.newEntry.date, count: input.newCount});
+      }).catch(function(error) {
+        res.status(500).json(error.toString());
+      })
+    }
+  }).catch(function(error) {
+    res.status(500).json(error.toString());
+  })
 });
 router.get('/api/exercise/log?', [
   query('userId')
@@ -157,23 +145,19 @@ function(req, res) {
       res.status(400).json(errors.array()[0].msg);
       return;
     } 
-  try {
-    const getData = async input => {
-      const rtrnData = await routeFunctions.filter_delete(input);
-      if (rtrnData === 'unable to access database') {
-        res.status(500).json(rtrnData);
-        return;
-      }
-      if (rtrnData === 'userId not recognized') {
-        res.status(404).json(rtrnData);
-        return;
-      }
-      res.status(200).json(rtrnData);
-    };
-    getData(req.query);
-  } catch(error) {
-    res.status(500).json('Error: Unable to access data');
-  }
+    const getData = (function() {
+      return new Promise(function(resolve, reject) {
+        resolve(routeFunctions.filter_delete(req.query));
+      }).then(function(rtrnData) {
+        if (rtrnData === 'userId not recognized') {
+          res.status(404).json(rtrnData);
+          return;
+        }
+        res.status(200).json(rtrnData);
+      }).catch(function(error) {
+        res.status(500).json(error.toString());
+      })
+    }());
 });
 router.delete('/api/exercise/delete', [
   body('from')
@@ -213,14 +197,14 @@ function(req, res) {
       res.status(400).json(errors.array()[0].msg);
       return;
     } 
-  try {
-    const getData = async input => {
-      const rtrnData = await routeFunctions.filter_delete(input);
-      res.status(200).json(rtrnData);
-    };
-    getData(req.body);
-  } catch(error) {
-    res.status(500).json('Error: Unable to access data');
-  }
+    const getData = (function() {
+      return new Promise(function(resolve, reject) {
+        resolve(routeFunctions.filter_delete(req.body));
+      }).then(function(rtrnData) {
+        res.status(200).json(rtrnData);
+      }).catch(function(error) {
+        res.status(500).json(error.toString());
+      });
+    })();
 });
 module.exports = router;

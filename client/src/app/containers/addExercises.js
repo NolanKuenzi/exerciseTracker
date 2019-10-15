@@ -1,57 +1,63 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import regeneratorRuntime, { async } from 'regenerator-runtime';
 import { Store } from '../store';
 
 const AddExercises = () => {
   const { dispatch } = React.useContext(Store);
-
   const newData = item => {
     return dispatch({
       type: 'NEW_DATA',
       item,
     });
   };
+
+  const [userId, setUserId] = useState('');
+  const [description, setDescription] = useState('');
+  const [duration, setDuration] = useState('');
+  const [date, setDate] = useState('');
+
   const addExercisesSubmit = async event => {
     event.preventDefault();
     event.persist();
-    const getInputs = document.getElementsByTagName('input');
     try {
       const body = {
-        userId: getInputs[1].value,
-        description: getInputs[2].value,
-        duration: getInputs[3].value,
-        date: getInputs[4].value,
+        userId,
+        description,
+        duration,
+        date,
       };
       /* eslint-disable */
-      const getData = await axios.post('https://sleepy-springs-16191.herokuapp.com/api/exercise/add', body);
-      const response = await getData;
-      const addExercisesDiv = typeof response.data === 'string' ? null : (
+      const postData = await axios.post('https://sleepy-springs-16191.herokuapp.com/api/exercise/add', body);
+      const addExercisesDiv = typeof postData.data === 'string' ? null : (
         <div id="addExerciseDiv">
           <h3>Entry Added:</h3>
-          <b>{response.data.date}</b> <br />
-          Username: {response.data.username} <br />
-          Id: {response.data.userId} <br />
-          Description: {response.data.description} <br />
-          Duration: {response.data.duration} mins. <br />
-          Entry Number: {response.data.count}
+          <b>{postData.data.date}</b> <br />
+          Username: {postData.data.username} <br />
+          Id: {postData.data.userId} <br />
+          Description: {postData.data.description} <br />
+          Duration: {postData.data.duration} mins. <br />
+          Entry Number: {postData.data.count}
         </div>
       );
-      const addExercisesData = typeof response.data === 'string' ? (
-        <div className="displayErrs">{response.data}</div>
+      const addExercisesData = typeof postData.data === 'string' ? (
+        <div className="displayErrs">{postData.data}</div>
       ) : (
         addExercisesDiv
       );
       newData(addExercisesData);
-      if (typeof response.data !== 'string') {
-        event.target.reset();
+      if (typeof postData.data !== 'string') {
+        setUserId('');
+        setDescription('');
+        setDuration('');
+        setDate('');
       } 
     } catch (error) {
       if (error.response !== undefined) {
-        newData(error.response.data);
+        newData(<div className="displayErrs">{error.response.data}</div>);
         return;
-      } 
-      newData('Error: Unable to access data');
+      }
+      newData(<div className="displayErrs">Error: Network Error</div>);
     }
   };
   return (
@@ -62,10 +68,10 @@ const AddExercises = () => {
           <span className="postSpan">POST /api/exercise/add </span>
         </span>
         <div>
-          <input type="text" placeholder="userId*" className="headings" name="userId" />
-          <input type="text" placeholder="description*" className="headings" name="description" />
-          <input type="text" placeholder="duration* (mins.)" className="headings" name="duration" />
-          <input type="text" placeholder="date (yyyy-mm-dd)" className="headings" name="date" />
+          <input type="text" placeholder="userId*" className="headings" value={userId} onChange={event => setUserId(event.target.value)} />
+          <input type="text" placeholder="description*" className="headings" value={description} onChange={event => setDescription(event.target.value)}/>
+          <input type="text" placeholder="duration* (mins.)" className="headings" value={duration} onChange={event => setDuration(event.target.value)} />
+          <input type="text" placeholder="date (yyyy-mm-dd)" className="headings" value={date} onChange={event => setDate(event.target.value)} />
         </div>
         <button className="headings" type="submit" id="addExercisesSubmit">
           <span>Submit</span>

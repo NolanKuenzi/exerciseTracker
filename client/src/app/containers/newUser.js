@@ -1,43 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import regeneratorRuntime, { async } from 'regenerator-runtime';
 import { Store } from '../store';
 
 const NewUser = () => {
   const { dispatch } = React.useContext(Store);
-
   const newData = item => {
     return dispatch({
       type: 'NEW_DATA',
       item,
     });
   };
+
+  const [userName, setUserName] = useState('');
+
   const newUserSubmit = async event => {
     event.preventDefault();
     event.persist();
     try {
-      const getData = await axios.post(
+      const postData = await axios.post(
         'https://sleepy-springs-16191.herokuapp.com/api/exercise/new-user',
         {
-          userName: document.getElementsByName('userName')[0].value,
+          userName,
         },
       );
       /* eslint-disable */
-      const response = await getData;
       const newUserDiv = (
         <div id="displayNewUsr">
-          New User: {response.data.username} <br /> Id: {response.data.userId}
+          New User: {postData.data.username} <br /> Id: {postData.data.userId}
         </div>
       );
-      const newUsrData = typeof response.data === 'string' ? <div className="displayErrs">{response.data}</div> : newUserDiv;
-      newData(newUsrData);
-      event.target.reset();
+      newData(newUserDiv);
+      setUserName('');
     } catch (error) {
       if (error.response !== undefined) {
-        newData(error.response.data);
+        newData(<div className="displayErrs">{error.response.data}</div>);
         return;
       }
-      newData('An error occurred while connecting to MongoDB Atlas');
+      newData(<div className="displayErrs">Error: Network Error</div>);
     }
   };
   return (
@@ -55,7 +55,8 @@ const NewUser = () => {
               type="text"
               placeholder="username"
               className="headings"
-              name="userName"
+              value={userName}
+              onChange={event => setUserName(event.target.value)}
             />
             <button className="headings" type="submit" id="newUserSubmit">
               <span>Submit</span>

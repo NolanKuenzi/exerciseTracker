@@ -12,49 +12,46 @@ module.exports = {
     }
     return idString.join('');
   },
-  filter_delete:function(query) {
-    return new Promise(function(resolve, reject) {
-      users.find({userId: query.userId}, {__v: 0})
-      .exec(function(err, data) {
-        if (err) {
-          reject('unable to access database');
-          return;
+  filter_delete: function(query) {
+    function filterFunc(data) {
+      let getLog = data.log.slice(0);
+      getLog.sort((a, b) => new Date(a.date) - new Date(b.date));
+      if (query.from !== '') {
+        getLog = getLog.filter(item => new Date(item.date) >= new Date(query.from));
+      }
+      if (query.to !== '') {
+        getLog = getLog.filter(item => new Date(item.date) <= new Date(query.to));
+      }
+      if (query.limit !== '') {
+        if (query.limit < getLog.length) {
+          getLog = getLog.slice(0, query.limit);
         }
-        if (data.length === 0) {
-          reject('userId not recognized');
-          return;
-        }
-        if (query.logId !== undefined) {
-          let newLog = data[0].log.slice(0);
-          newLog = newLog.filter(item => item.logId !== query.logId);
-          newLog.sort((a, b) => new Date(a.date) - new Date(b.date));
-          data[0].log = newLog.slice(0);
-          const newCount = (parseInt(data[0].count, 10)) - 1;
-          data[0].count  = newCount;
-          data[0].save();
-          resolve(data);
-        } else {
-          resolve(data);
-        }
-      });
-    }).then(function(data) {
-        let getLog = data[0].log.slice(0);
-        getLog.sort((a, b) => new Date(a.date) - new Date(b.date));
-        if (query.from !== '') {
-          getLog = getLog.filter(item => new Date(item.date) >= new Date(query.from));
-        }
-        if (query.to !== '') {
-          getLog = getLog.filter(item => new Date(item.date) <= new Date(query.to));
-        }
-        if (query.limit !== '') {
-          if (query.limit < getLog.length) {
-            getLog = getLog.slice(0, query.limit);
-          }
-        }
-        data[0].log = getLog.slice(0);
+      };
+      return getLog.slice(0);
+    };
+    return users.find({userId: query.userId}, {__v: 0}).then(function(data) {
+      if (data.length === 0) {
+        return 'userId not recognized';
+      }
+      if (query.logId !== undefined) {
+        let newLog = data[0].log.slice(0);
+        newLog = newLog.filter(item => item.logId !== query.logId);
+        newLog.sort((a, b) => new Date(a.date) - new Date(b.date));
+        data[0].log = newLog.slice(0);
+        const newCount = (parseInt(data[0].count, 10)) - 1;
+        data[0].count  = newCount;
+        return data[0].save().then(function(rtrnData) {
+          rtrnData.log = filterFunc(rtrnData).slice(0);
+          return rtrnData;
+        }).catch(function(error) {
+          return error;
+        })
+      } else {
+        data[0].log = filterFunc(data[0]).slice(0);
         return data[0];
+      }
     }).catch(function(error) {
-        return error;
-    }); 
+      return error;
+    })
   },
 };

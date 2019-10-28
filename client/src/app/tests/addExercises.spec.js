@@ -5,8 +5,6 @@ import { StoreProvider } from '../store';
 
 afterEach(cleanup);
 
-afterEach(cleanup);
-
 const RenderComponent = () => {
   return render(
     <StoreProvider>

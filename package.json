@@ -23,7 +23,7 @@
     "express": "^4.16.4",
     "express-validator": "^6.1.1",
     "helmet": "^3.18.0",
-    "mocha": "^6.2.0",
+    "mocha": "^10.2.0",
     "mongoose": "^5.7.8"
   },
   "devDependencies": {
